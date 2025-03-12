@@ -9,6 +9,7 @@ public class Movie {
     private final String description;
     private final List<Genre> genres;
     // Zusätzliche Attribute exercise 2
+    private final String id;
     private final int releaseYear;
     private final int lengthInMinutes;
     private final List<String> direcotrs;
@@ -20,6 +21,7 @@ public class Movie {
         this.title = title;
         this.description = description;
         this.genres = genres;
+        this.id = ""; // TODO: dummy for now, make constructor argument
         this.releaseYear = 0; // TODO: dummy for now, make constructor argument
         this.lengthInMinutes = 0; // TODO: dummy for now, make constructor argument
         this.direcotrs = new ArrayList<>(); // TODO: dummy for now, make constructor argument
