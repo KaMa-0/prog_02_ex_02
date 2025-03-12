@@ -8,11 +8,24 @@ public class Movie {
     private final String title;
     private final String description;
     private final List<Genre> genres;
+    // Zusätzliche Attribute exercise 2
+    private final int releaseYear;
+    private final int lengthInMinutes;
+    private final List<String> direcotrs;
+    private final List<String> writers;
+    private final List<String> mainCast;
+    private final int rating;
 
     public Movie(String title, String description, List<Genre> genres) {
         this.title = title;
         this.description = description;
         this.genres = genres;
+        this.releaseYear = 0; // TODO: dummy for now, make constructor argument
+        this.lengthInMinutes = 0; // TODO: dummy for now, make constructor argument
+        this.direcotrs = new ArrayList<>(); // TODO: dummy for now, make constructor argument
+        this.writers = new ArrayList<>(); // TODO: dummy for now, make constructor argument
+        this.mainCast = new ArrayList<>(); // TODO: dummy for now, make constructor argument
+        this.rating = 0; // TODO: dummy for now, make constructor argument
     }
 
     @Override
