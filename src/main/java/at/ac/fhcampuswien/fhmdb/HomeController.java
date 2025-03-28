@@ -36,11 +36,21 @@ public class HomeController implements Initializable {
     @FXML
     public JFXButton sortBtn;
 
+    //New ComboBoxes
+    @FXML
+    public JFXComboBox releaseYearComboBox;
+
+    @FXML
+    public JFXComboBox ratingComboBox;
+
     public List<Movie> allMovies;
 
     protected ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
 
     protected SortedState sortedState;
+
+
+    private final MovieAPI movieAPI = new MovieAPI(); //Adding MovieAPI object to call methods in MovieAPI class
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -49,20 +59,47 @@ public class HomeController implements Initializable {
     }
 
     public void initializeState() {
-        allMovies = Movie.initializeMovies();
+
+        allMovies = movieAPI.getAllMovies(); // We call all the films from API
         observableMovies.clear();
-        observableMovies.addAll(allMovies); // add all movies to the observable list
+        observableMovies.addAll(allMovies);
         sortedState = SortedState.NONE;
     }
 
     public void initializeLayout() {
-        movieListView.setItems(observableMovies);   // set the items of the listview to the observable list
-        movieListView.setCellFactory(movieListView -> new MovieCell()); // apply custom cells to the listview
+        movieListView.setItems(observableMovies);
+        movieListView.setCellFactory(movieListView -> new MovieCell());
 
-        Object[] genres = Genre.values();   // get all genres
-        genreComboBox.getItems().add("No filter");  // add "no filter" to the combobox
-        genreComboBox.getItems().addAll(genres);    // add all genres to the combobox
+        // Genre ComboBox
+        Object[] genres = Genre.values();
+        genreComboBox.getItems().add("No filter");
+        genreComboBox.getItems().addAll(genres);
         genreComboBox.setPromptText("Filter by Genre");
+
+        //Release Year ComboBox
+        releaseYearComboBox.getItems().add("No Filter"); //"No Filter" option
+        int earliestYear = java.time.Year.now().getValue();
+        // Someone need to check this method pls
+        for (Movie movie : allMovies) { //With this method we can find the lowest year in our movie list. So we can start with the lowest value
+            int year = movie.getReleaseYear();
+            if (year > 0 && year < earliestYear) {
+                earliestYear = year;
+            }
+        }
+        // Adding years from lowest to today
+
+        int currentYear = java.time.Year.now().getValue();
+        for (int year = earliestYear; year <= currentYear; year++) {
+            releaseYearComboBox.getItems().add(year);
+        }
+        releaseYearComboBox.setPromptText("Release Year");
+
+        // Rating ComboBox
+        ratingComboBox.getItems().add("No Filter"); // "No filter" option
+        for (double rating = 1.0; rating <= 9.0; rating++) {
+            ratingComboBox.getItems().add(rating);
+        }
+        ratingComboBox.setPromptText("Min Rating");
     }
 
     public void sortMovies(){
@@ -72,9 +109,7 @@ public class HomeController implements Initializable {
             sortMovies(SortedState.DESCENDING);
         }
     }
-    // sort movies based on sortedState
-    // by default sorted state is NONE
-    // afterwards it switches between ascending and descending
+
     public void sortMovies(SortedState sortDirection) {
         if (sortDirection == SortedState.ASCENDING) {
             observableMovies.sort(Comparator.comparing(Movie::getTitle));
@@ -95,8 +130,8 @@ public class HomeController implements Initializable {
         return movies.stream()
                 .filter(Objects::nonNull)
                 .filter(movie ->
-                    movie.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    movie.getDescription().toLowerCase().contains(query.toLowerCase())
+                        movie.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                                movie.getDescription().toLowerCase().contains(query.toLowerCase())
                 )
                 .toList();
     }
@@ -130,10 +165,39 @@ public class HomeController implements Initializable {
     }
 
     public void searchBtnClicked(ActionEvent actionEvent) {
-        String searchQuery = searchField.getText().trim().toLowerCase();
-        Object genre = genreComboBox.getSelectionModel().getSelectedItem();
+        String searchQuery = searchField.getText().trim();
+        Genre genre = null;
+        Object releaseYear = null;
+        Object rating = null;
 
-        applyAllFilters(searchQuery, genre);
+        // genre selection
+        Object selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
+        if (selectedGenre != null && !selectedGenre.toString().equals("No filter")) {
+            genre = Genre.valueOf(selectedGenre.toString());
+        }
+
+        // release year selection
+        Object selectedReleaseYear = releaseYearComboBox.getSelectionModel().getSelectedItem();
+        if (selectedReleaseYear != null && !selectedReleaseYear.toString().equals("No filter")) {
+            releaseYear = releaseYearComboBox.getSelectionModel().getSelectedItem(); // Check this when the movie list from API comes
+        }
+
+        // rating selection
+        Object selectedRating = ratingComboBox.getSelectionModel().getSelectedItem();
+        if (selectedRating != null && !selectedRating.toString().equals("No filter")) {
+            rating = ratingComboBox.getSelectionModel().getSelectedItem(); // Check this when the movie list from API comes
+        }
+
+        // Calling movies with filter from API
+        List<Movie> filteredMovies;
+        if (searchQuery.isEmpty()) {
+            filteredMovies = movieAPI.getMovies(null, genre, releaseYear, rating);
+        } else {
+            filteredMovies = movieAPI.getMovies(searchQuery, genre, releaseYear, rating);
+        }
+
+        observableMovies.clear();
+        observableMovies.addAll(filteredMovies);
         sortMovies(sortedState);
     }
 

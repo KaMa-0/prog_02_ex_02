@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Movie {
+public class    Movie {
     private final String title;
     private final String description;
     private final List<Genre> genres;
@@ -28,6 +28,22 @@ public class Movie {
         this.writers = new ArrayList<>(); // TODO: dummy for now, make constructor argument
         this.mainCast = new ArrayList<>(); // TODO: dummy for now, make constructor argument
         this.rating = 0; // TODO: dummy for now, make constructor argument
+    }
+
+
+
+    public Movie(String id, String title, String description, List<Genre> genres, int releaseYear, int lengthInMinutes, List<String> direcotrs, List<String> writers, List<String> mainCast, int rating) {
+        this.title = title;
+        this.description = description;
+        this.genres = genres;
+        this.id = id;
+        this.releaseYear = releaseYear;
+        this.lengthInMinutes = lengthInMinutes;
+        this.direcotrs = direcotrs;
+        this.writers = writers;
+        this.mainCast = mainCast;
+        this.rating = rating;
+
     }
 
     @Override
@@ -55,6 +71,38 @@ public class Movie {
     public List<Genre> getGenres() {
         return genres;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public int getReleaseYear() {
+        return releaseYear;
+    }
+
+    public int getLengthInMinutes() {
+        return lengthInMinutes;
+    }
+
+    public List<String> getDirecotrs() {
+        return direcotrs;
+    }
+
+    public List<String> getWriters() {
+        return writers;
+    }
+
+    public List<String> getMainCast() {
+        return mainCast;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+
+
+
 
     public static List<Movie> initializeMovies(){
         List<Movie> movies = new ArrayList<>();
