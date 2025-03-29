@@ -239,36 +239,23 @@ class HomeControllerTest {
                 new Movie("Movie C", "", List.of("Actor A", "Actor D"))
         );
 
-    }
-
-
-    @Test
-    void get_most_popular_actor_should_return_the_actor_that_appears_most() {
-        // given
-        List<Movie> movies = List.of(
-                new Movie("Movie A", "", List.of("Actor A", "Actor B")),
-                new Movie("Movie B", "", List.of("Actor A", "Actor C")),
-                new Movie("Movie C", "", List.of("Actor A", "Actor D"))
-        );
-
-        @Test
-        void get_most_popular_actor_should_return_null_for_empty_movie_list() {
-            // Testet Verhalten bei leerer Liste.
-            // Es gibt keine Schauspieler – daher sollte null zurückgegeben werden.
-
-            List<Movie> movies = List.of();
-
-            String result = homeController.getMostPopularActor(movies);
-
-            assertNull(result);
-        }
-
-
         // when
         String result = homeController.getMostPopularActor(movies);
 
         // then
         assertEquals("Actor A", result);
+    }
+
+    @Test
+    void get_most_popular_actor_should_return_null_for_empty_movie_list() {
+        // given
+        List<Movie> movies = List.of();
+
+        // when
+        String result = homeController.getMostPopularActor(movies);
+
+        // then
+        assertNull(result);
     }
 
     @Test
@@ -365,9 +352,6 @@ class HomeControllerTest {
 
         server.shutdown();
     }
-
-
-}
 
 
 }
