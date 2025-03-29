@@ -1,11 +1,15 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.api.MovieAPI;
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.SortedState;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -221,5 +225,147 @@ class HomeControllerTest {
         // then
         assertEquals(homeController.allMovies, homeController.observableMovies);
     }
+
+    @Test
+    void get_most_popular_actor_should_return_the_actor_that_appears_most() {
+        // given
+        List<Movie> movies = List.of(
+                new Movie("Movie A", "", List.of("Actor A", "Actor B")),
+                new Movie("Movie B", "", List.of("Actor A", "Actor C")),
+                new Movie("Movie C", "", List.of("Actor A", "Actor D"))
+        );
+
+    }
+
+    // ** new tests ** //
+
+
+    @Test
+    void get_most_popular_actor_should_return_the_actor_that_appears_most() {
+        // given
+        List<Movie> movies = List.of(
+                new Movie("Movie A", "", List.of("Actor A", "Actor B")),
+                new Movie("Movie B", "", List.of("Actor A", "Actor C")),
+                new Movie("Movie C", "", List.of("Actor A", "Actor D"))
+        );
+
+        @Test
+        void get_most_popular_actor_should_return_null_for_empty_movie_list() {
+            // Testet Verhalten bei leerer Liste.
+            // Es gibt keine Schauspieler – daher sollte null zurückgegeben werden.
+
+            List<Movie> movies = List.of();
+
+            String result = homeController.getMostPopularActor(movies);
+
+            assertNull(result);
+        }
+
+
+        // when
+        String result = homeController.getMostPopularActor(movies);
+
+        // then
+        assertEquals("Actor A", result);
+    }
+
+    @Test
+    void getLongestMovieTitle_returns_correct_length() {
+        // given
+        List<Movie> movies = List.of(
+                new Movie("Short", "", List.of()),
+                new Movie("A very very long title indeed", "", List.of()),
+                new Movie("Medium title", "", List.of())
+        );
+
+        // when
+        int result = homeController.getLongestMovieTitle(movies);
+
+        // then
+        assertEquals(31, result);
+    }
+
+    @Test
+    void countMoviesFrom_returns_correct_count() { // zählt korrekt wieviele filme von einem bestimmten regisseur sind
+        // given
+        List<Movie> movies = List.of(
+                new Movie("Film A", "", List.of(), "John Doe", 2020, 7.5),
+                new Movie("Film B", "", List.of(), "Jane Smith", 2021, 8.1),
+                new Movie("Film C", "", List.of(), "John Doe", 2019, 6.8)
+        );
+
+        // when
+        long result = homeController.countMoviesFrom(movies, "John Doe");
+
+        // then
+        assertEquals(2, result);
+    }
+
+    @Test
+    void getMoviesBetweenYears_filters_movies_correctly() {
+        // given
+        List<Movie> movies = List.of(
+                new Movie("Old Movie", "", List.of(), "Director", 1995, 6.0),
+                new Movie("Modern Movie", "", List.of(), "Director", 2010, 7.5),
+                new Movie("New Movie", "", List.of(), "Director", 2023, 8.2)
+        );
+
+        // when
+        List<Movie> result = homeController.getMoviesBetweenYears(movies, 2000, 2023);
+
+        // then
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(m -> m.getReleaseYear() >= 2000 && m.getReleaseYear() <= 2023));
+    }
+
+    @Test
+    void getAllMovies_returns_movie_list_from_api() throws IOException {
+        // given
+        MockWebServer server = new MockWebServer();
+        server.enqueue(new MockResponse()
+                .setBody("[{\"title\":\"Test Movie\",\"mainCast\":[\"Actor X\"],\"releaseYear\":2020}]")
+                .addHeader("Content-Type", "application/json"));
+        server.start();
+        MovieAPI movieAPI = new MovieAPI(server.url("/").toString());
+
+        // when
+        List<Movie> movies = movieAPI.getAllMovies();
+
+        // then
+        assertEquals(1, movies.size());
+        assertEquals("Test Movie", movies.get(0).getTitle());
+
+        server.shutdown();
+    }
+
+    @Test
+    void movieApi_builds_correct_url_with_parameters() {
+        // given
+        MovieAPI api = new MovieAPI("https://example.com");
+
+        // when
+        String url = api.buildUrl("Matrix", "ACTION", 2000, 8.0);
+
+        // then
+        assertEquals("https://example.com/movies?query=Matrix&genre=ACTION&releaseYear=2000&ratingFrom=8.0", url);
+    }
+
+    @Test
+    void movieApi_throws_exception_on_403() {
+        // given
+        MockWebServer server = new MockWebServer();
+        server.enqueue(new MockResponse().setResponseCode(403));
+        server.start();
+        MovieAPI api = new MovieAPI(server.url("/").toString());
+
+        // when & then
+        assertThrows(IOException.class, api::getAllMovies);
+
+        server.shutdown();
+    }
+
+
+}
+
 
 }
