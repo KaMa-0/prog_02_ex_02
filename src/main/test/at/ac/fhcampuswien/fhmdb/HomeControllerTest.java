@@ -179,6 +179,7 @@ class HomeControllerTest {
         // when
         List<Movie> actual = homeController.filterByQuery(homeController.observableMovies, query);
 
+
         // then
         assertEquals(homeController.observableMovies, actual);
     }
