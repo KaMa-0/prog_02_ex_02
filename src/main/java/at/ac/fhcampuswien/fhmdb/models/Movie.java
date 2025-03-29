@@ -12,7 +12,7 @@ public class    Movie {
     private final String id;
     private final int releaseYear;
     private final int lengthInMinutes;
-    private final List<String> direcotrs;
+    private final List<String> directors;
     private final List<String> writers;
     private final List<String> mainCast;
     private final int rating;
@@ -24,7 +24,7 @@ public class    Movie {
         this.id = ""; // TODO: dummy for now, make constructor argument
         this.releaseYear = 0; // TODO: dummy for now, make constructor argument
         this.lengthInMinutes = 0; // TODO: dummy for now, make constructor argument
-        this.direcotrs = new ArrayList<>(); // TODO: dummy for now, make constructor argument
+        this.directors = new ArrayList<>(); // TODO: dummy for now, make constructor argument
         this.writers = new ArrayList<>(); // TODO: dummy for now, make constructor argument
         this.mainCast = new ArrayList<>(); // TODO: dummy for now, make constructor argument
         this.rating = 0; // TODO: dummy for now, make constructor argument
@@ -32,14 +32,14 @@ public class    Movie {
 
 
 
-    public Movie(String id, String title, String description, List<Genre> genres, int releaseYear, int lengthInMinutes, List<String> direcotrs, List<String> writers, List<String> mainCast, int rating) {
+    public Movie(String id, String title, String description, List<Genre> genres, int releaseYear, int lengthInMinutes, List<String> directors, List<String> writers, List<String> mainCast, int rating) {
         this.title = title;
         this.description = description;
         this.genres = genres;
         this.id = id;
         this.releaseYear = releaseYear;
         this.lengthInMinutes = lengthInMinutes;
-        this.direcotrs = direcotrs;
+        this.directors = directors;
         this.writers = writers;
         this.mainCast = mainCast;
         this.rating = rating;
@@ -84,8 +84,8 @@ public class    Movie {
         return lengthInMinutes;
     }
 
-    public List<String> getDirecotrs() {
-        return direcotrs;
+    public List<String> getDirectors() {
+        return directors;
     }
 
     public List<String> getWriters() {
