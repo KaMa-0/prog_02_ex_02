@@ -226,6 +226,10 @@ class HomeControllerTest {
         assertEquals(homeController.allMovies, homeController.observableMovies);
     }
 
+
+
+    // ** new tests ** //
+
     @Test
     void get_most_popular_actor_should_return_the_actor_that_appears_most() {
         // given
@@ -236,8 +240,6 @@ class HomeControllerTest {
         );
 
     }
-
-    // ** new tests ** //
 
 
     @Test
