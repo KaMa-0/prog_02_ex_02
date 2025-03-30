@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class HomeController implements Initializable {
     @FXML
@@ -79,6 +80,13 @@ public class HomeController implements Initializable {
 
         //Release Year ComboBox
         releaseYearComboBox.getItems().add("No Filter"); //"No Filter" option
+        List<Integer> uniqueYears = allMovies.stream().map(Movie::getReleaseYear).filter(year -> year > 0).distinct().sorted().collect(Collectors.toList());
+        releaseYearComboBox.getItems().addAll(uniqueYears);
+        releaseYearComboBox.setPromptText("Filter by Year");
+
+
+
+        /*
         int earliestYear = java.time.Year.now().getValue();
         // Someone need to check this method pls
         for (Movie movie : allMovies) { //With this method we can find the lowest year in our movie list. So we can start with the lowest value
@@ -88,13 +96,12 @@ public class HomeController implements Initializable {
             }
         }
         // Adding years from lowest to today
-
         int currentYear = java.time.Year.now().getValue();
         for (int year = earliestYear; year <= currentYear; year++) {
             releaseYearComboBox.getItems().add(year);
         }
         releaseYearComboBox.setPromptText("Release Year");
-
+         */
         // Rating ComboBox
         ratingComboBox.getItems().add("No Filter"); // "No filter" option
         for (double rating = 1.0; rating <= 9.0; rating++) {

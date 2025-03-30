@@ -46,7 +46,7 @@ public class MovieAPI {
                         try {
                             genres.add(Genre.valueOf(genreElement.getAsString()));
                         } catch (Exception e) {
-                            // Silent exception handling
+                            System.err.println("Unknown genre: " + genreElement.getAsString());
                         }
                     });
                 }
@@ -93,6 +93,9 @@ public class MovieAPI {
         OkHttpClient client = new OkHttpClient();
         String requestURL = buildRequestURL(query, genre, releaseYear, ratingFrom);
 
+        System.out.println("Requesting URL: " + requestURL); // Debug: show URL
+        System.out.println("releaseYear type: " + (releaseYear != null ? releaseYear.getClass().getName() : "null")); // Debug: check releaseYear type
+
         Request request = new Request.Builder()
                 .url(requestURL)
                 .addHeader("User-Agent", "http.agent")
@@ -100,14 +103,25 @@ public class MovieAPI {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
+                System.err.println("API request failed: " + response);
                 return new ArrayList<>();
             }
 
             String responseBody = response.body().string();
+            System.out.println("Response received with length: " + responseBody.length());
+
+            if (responseBody.length() < 100) {
+                System.out.println("Full response: " + responseBody); // Show full response if short
+            } else {
+                System.out.println("Response preview: " + responseBody.substring(0, 100) + "...");
+            }
 
             Movie[] movies = gson.fromJson(responseBody, Movie[].class);
+            System.out.println("Parsed " + movies.length + " movies");
             return Arrays.asList(movies);
         } catch (Exception e) {
+            System.err.println("[ERROR] Request Execution failed: " + e.getMessage());
+            e.printStackTrace();
             return new ArrayList<>();
         }
     }
@@ -127,6 +141,8 @@ public class MovieAPI {
         }
 
         if (releaseYear != null) {
+            // Debug the releaseYear value and type
+            System.out.println("Adding releaseYear: " + releaseYear + " (" + releaseYear.getClass().getName() + ")");
             urlBuilder.append(hasParam ? "&" : "?").append("releaseYear=").append(releaseYear);
             hasParam = true;
         }
