@@ -126,7 +126,7 @@ public class MovieAPI {
         }
     }
 
-    private String buildRequestURL(String query, Genre genre, Object releaseYear, Object ratingFrom) {
+    public String buildRequestURL(String query, Genre genre, Object releaseYear, Object ratingFrom) {
         StringBuilder urlBuilder = new StringBuilder(URL);
         boolean hasParam = false;
 
