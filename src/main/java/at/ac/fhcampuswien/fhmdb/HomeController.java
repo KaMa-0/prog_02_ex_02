@@ -213,6 +213,13 @@ public class HomeController implements Initializable {
         sortMovies(sortedState);
     }
 
+    public List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear) {
+        return movies.stream()
+                .filter(Objects::nonNull)
+                .filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear)
+                .collect(Collectors.toList());
+    }
+
     public void sortBtnClicked(ActionEvent actionEvent) {
         sortMovies();
     }
