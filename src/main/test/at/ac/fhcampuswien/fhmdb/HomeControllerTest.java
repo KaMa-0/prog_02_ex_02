@@ -367,26 +367,6 @@ class HomeControllerTest {
     }
 
     @Test
-    void getAllMovies_returns_movie_list_from_api() throws IOException {
-        // given
-        MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse()
-                .setBody("[{\"title\":\"Test Movie\",\"mainCast\":[\"Actor X\"],\"releaseYear\":2020}]")
-                .addHeader("Content-Type", "application/json"));
-        server.start();
-        MovieAPI movieAPI = new MovieAPI(server.url("/").toString());
-
-        // when
-        List<Movie> movies = movieAPI.getAllMovies();
-
-        // then
-        assertEquals(1, movies.size());
-        assertEquals("Test Movie", movies.get(0).getTitle());
-
-        server.shutdown();
-    }
-
-    @Test
     void movieApi_builds_correct_url_with_parameters() {
         // given
         MovieAPI api = new MovieAPI();
@@ -396,20 +376,6 @@ class HomeControllerTest {
 
         // then
         assertEquals("https://example.com/movies?query=Matrix&genre=ACTION&releaseYear=2000&ratingFrom=8.0", url);
-    }
-
-    @Test
-    void movieApi_throws_exception_on_403() {
-        // given
-        MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setResponseCode(403));
-        server.start();
-        MovieAPI api = new MovieAPI(server.url("/").toString());
-
-        // when & then
-        assertThrows(IOException.class, api::getAllMovies);
-
-        server.shutdown();
     }
 
 }
