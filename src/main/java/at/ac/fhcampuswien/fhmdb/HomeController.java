@@ -167,8 +167,8 @@ public class HomeController implements Initializable {
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
     }
-    public long countMoviesFrom(List<Movie> movies, String director) {
-        return movies.stream()
+    public long countMoviesFrom(String director) {
+        return allMovies.stream()
                 .filter(movie -> movie.getDirectors().contains(director))
                 .count();
     }
@@ -210,8 +210,8 @@ public class HomeController implements Initializable {
         sortMovies(sortedState);
     }
 
-    public List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear) {
-        return movies.stream()
+    public List<Movie> getMoviesBetweenYears(int startYear, int endYear) {
+        return allMovies.stream()
                 .filter(Objects::nonNull)
                 .filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear)
                 .collect(Collectors.toList());
