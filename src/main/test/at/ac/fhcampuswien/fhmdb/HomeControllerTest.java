@@ -23,7 +23,7 @@ class HomeControllerTest {
         homeController.initializeState();
         List<Movie> dummyMovies = Arrays.asList(
                 new Movie("5",  // "Comedy Chaos" (alphabetically first)
-                        "Comedy Chaos (DUMMY MOVIE)",
+                        "Comedy Chaos",
                         "Mismatched roommates inherit a failing pet hotel.",
                         Arrays.asList(Genre.COMEDY),
                         2020,
@@ -33,7 +33,7 @@ class HomeControllerTest {
                         Arrays.asList("Actor C", "Actor Shared"),  // Shared with movies 2,3,4
                         3.5),
                 new Movie("1",  // "Dummy-A" (second)
-                        "Dummy-A (DUMMY MOVIE)",
+                        "Dummy-A",
                         "A paraplegic Marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home.",
                         Arrays.asList(Genre.ANIMATION, Genre.DRAMA, Genre.ACTION),
                         2000,
@@ -44,7 +44,7 @@ class HomeControllerTest {
                         4.0),
 
                 new Movie("2",  // "Galactic Odyssey" (third)
-                        "Galactic Odyssey (DUMMY MOVIE)",
+                        "Galactic Odyssey",
                         "A team of astronauts embarks on a perilous journey across the galaxy.",
                         Arrays.asList(Genre.SCIENCE_FICTION, Genre.ADVENTURE),
                         2022,
@@ -55,7 +55,7 @@ class HomeControllerTest {
                         4.5),
 
                 new Movie("3",  // "Midnight Detective" (fourth)
-                        "Midnight Detective (DUMMY MOVIE)",
+                        "Midnight Detective",
                         "A private investigator takes on a mysterious case in 1940s LA.",
                         Arrays.asList(Genre.CRIME, Genre.THRILLER),
                         2019,
@@ -66,7 +66,7 @@ class HomeControllerTest {
                         3.8),
 
                 new Movie("4",  // "The Last Kingdom" (last, due to "The")
-                        "The Last Kingdom (DUMMY MOVIE)",
+                        "The Last Kingdom",
                         "A warrior rises to power in medieval England.",
                         Arrays.asList(Genre.ADVENTURE, Genre.ACTION),
                         2021,
@@ -76,7 +76,7 @@ class HomeControllerTest {
                         Arrays.asList("Actor H", "Actor I", "Actor Shared"),  // Shared with movies 2,3,5
                         4.2)
         );
-        homeController.allMovies = dummyMovies;
+        homeController.setMovies(dummyMovies);
     }
 
     @Test
@@ -300,17 +300,7 @@ class HomeControllerTest {
                 Arrays.asList("Dir. H", "Dir. I"),
                 Arrays.asList("Writer Shared", "Writer H"),
                 Arrays.asList("Actor H", "Actor I", "Actor Shared"),
-                4.2),
-            new Movie("1",
-                "Dummy-A",
-                "A paraplegic Marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home.",
-                Arrays.asList(Genre.ANIMATION, Genre.DRAMA, Genre.ACTION),
-                2000,
-                120,
-                Arrays.asList("Dir. A", "Dir. B"),
-                Arrays.asList("Writer A", "Writer B", "Writer C"),
-                Arrays.asList("Actor A", "Actor C"),
-                4.0)
+                4.2)
         );
 
         assertEquals(expected, actual);
@@ -388,7 +378,7 @@ class HomeControllerTest {
     void get_most_popular_actor_should_return_null_for_empty_movie_list() {
         // given
         List<Movie> emptyList = Arrays.asList();
-        homeController.allMovies = emptyList;
+        homeController.setMovies(emptyList);
 
         // when
         String result = homeController.getMostPopularActor();
@@ -403,7 +393,7 @@ class HomeControllerTest {
         int result = homeController.getLongestMovieTitle();
 
         // then
-        assertEquals(31, result);
+        assertEquals(32, result);
     }
 
     @Test

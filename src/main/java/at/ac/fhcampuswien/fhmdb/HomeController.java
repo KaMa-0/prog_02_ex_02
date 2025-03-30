@@ -65,6 +65,12 @@ public class HomeController implements Initializable {
         sortedState = SortedState.NONE;
     }
 
+    public void setMovies(List<Movie> movies) {
+        allMovies = movies;
+        observableMovies.clear();
+        observableMovies.addAll(allMovies);
+    }
+
     public void initializeLayout() {
         movieListView.setItems(observableMovies);
         movieListView.setCellFactory(movieListView -> new MovieCell());
