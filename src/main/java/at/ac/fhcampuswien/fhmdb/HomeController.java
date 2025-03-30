@@ -16,10 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 
 import java.net.URL;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class HomeController implements Initializable {
@@ -219,6 +216,29 @@ public class HomeController implements Initializable {
                 .filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear)
                 .collect(Collectors.toList());
     }
+
+    public String getMostPopularActor() {
+        if (observableMovies == null || observableMovies.isEmpty()) return null;
+
+        return observableMovies.stream()
+                .flatMap(m -> m.getMainCast().stream())
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(actor -> actor, Collectors.counting()))
+                .entrySet().stream()
+                .max(Comparator.comparingLong(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    public int getLongestMovieTitle() {
+        if (observableMovies == null || observableMovies.isEmpty()) return 0;
+
+        return observableMovies.stream()
+                .mapToInt(movie -> movie.getTitle().length())
+                .max()
+                .orElse(0);
+    }
+
 
     public void sortBtnClicked(ActionEvent actionEvent) {
         sortMovies();
