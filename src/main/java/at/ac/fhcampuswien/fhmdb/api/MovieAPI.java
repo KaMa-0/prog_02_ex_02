@@ -140,14 +140,12 @@ public class MovieAPI {
             hasParam = true;
         }
 
-        if (releaseYear != null) {
-            // Debug the releaseYear value and type
-            System.out.println("Adding releaseYear: " + releaseYear + " (" + releaseYear.getClass().getName() + ")");
+        if (releaseYear != null && !releaseYear.toString().equals("No Filter")) {
             urlBuilder.append(hasParam ? "&" : "?").append("releaseYear=").append(releaseYear);
             hasParam = true;
         }
 
-        if (ratingFrom != null) {
+        if (ratingFrom != null && !ratingFrom.toString().equals("No Filter")) {
             urlBuilder.append(hasParam ? "&" : "?").append("ratingFrom=").append(ratingFrom);
         }
 
