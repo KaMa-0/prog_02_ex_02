@@ -31,6 +31,22 @@ public class    Movie {
     }
 
 
+    public Movie(String title, String description, List<Genre> genres, String director, int releaseYear, double rating) {
+        this.title = title;
+        this.description = description;
+        this.genres = genres;
+        this.id = "";
+        this.releaseYear = releaseYear;
+        this.lengthInMinutes = 0;
+
+        List<String> directorList = new ArrayList<>();
+        directorList.add(director);
+        this.directors = directorList;
+
+        this.writers = new ArrayList<>();
+        this.mainCast = new ArrayList<>();
+        this.rating = rating;
+    }
 
     public Movie(String id, String title, String description, List<Genre> genres, int releaseYear, int lengthInMinutes, List<String> directors, List<String> writers, List<String> mainCast, double rating) {
         this.title = title;
@@ -43,7 +59,6 @@ public class    Movie {
         this.writers = writers;
         this.mainCast = mainCast;
         this.rating = rating;
-
     }
 
     @Override
@@ -98,6 +113,12 @@ public class    Movie {
 
     public double getRating() {
         return rating;
+    }
+    public String getDirector() {
+        if (directors != null && !directors.isEmpty()) {
+            return directors.get(0);
+        }
+        return null;
     }
 
 

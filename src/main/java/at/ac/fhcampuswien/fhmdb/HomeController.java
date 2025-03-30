@@ -85,7 +85,6 @@ public class HomeController implements Initializable {
         releaseYearComboBox.setPromptText("Filter by Year");
 
 
-
         /*
         int earliestYear = java.time.Year.now().getValue();
         // Someone need to check this method pls
@@ -170,6 +169,11 @@ public class HomeController implements Initializable {
 
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
+    }
+    public long countMoviesFrom(List<Movie> movies, String director) {
+        return movies.stream()
+                .filter(movie -> movie.getDirectors().contains(director))
+                .count();
     }
 
     public void searchBtnClicked(ActionEvent actionEvent) {
