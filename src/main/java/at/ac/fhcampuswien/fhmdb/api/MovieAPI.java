@@ -3,17 +3,87 @@ package at.ac.fhcampuswien.fhmdb.api;
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import okhttp3.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MovieAPI {
-    private final String URL = "http://prog2.fh-campuswien.ac.at/swagger-ui/index.html#/movie-controller/getMovies";
-    private final String DELIM = "&";
+    private static final String URL = "https://prog2.fh-campuswien.ac.at/movies";
+    private final Gson gson;
 
-    public MovieAPI() {}
+    public MovieAPI() {
+        gson = new GsonBuilder()
+                .registerTypeAdapter(Movie.class, new MovieDeserializer())
+                .create();
+    }
+
+    static class MovieDeserializer implements JsonDeserializer<Movie> {
+        @Override
+        public Movie deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject movieJson = json.getAsJsonObject();
+
+            String id = getStringOrDefault(movieJson, "id", "");
+            String title = getStringOrDefault(movieJson, "title", "");
+            String description = getStringOrDefault(movieJson, "description", "");
+            int releaseYear = getIntOrDefault(movieJson, "releaseYear", 0);
+            int lengthInMinutes = getIntOrDefault(movieJson, "lengthInMinutes", 0);
+            double rating = getDoubleOrDefault(movieJson, "rating", 0.0);
+
+            List<Genre> genres = new ArrayList<>();
+            if (movieJson.has("genres") && !movieJson.get("genres").isJsonNull()) {
+                JsonElement genresElement = movieJson.get("genres");
+                if (genresElement.isJsonArray()) {
+                    genresElement.getAsJsonArray().forEach(genreElement -> {
+                        try {
+                            genres.add(Genre.valueOf(genreElement.getAsString()));
+                        } catch (Exception e) {
+                            // Silent exception handling
+                        }
+                    });
+                }
+            }
+
+            List<String> directors = getStringListOrDefault(movieJson, "directors");
+            List<String> writers = getStringListOrDefault(movieJson, "writers");
+            List<String> mainCast = getStringListOrDefault(movieJson, "mainCast");
+
+            return new Movie(id, title, description, genres, releaseYear, lengthInMinutes,
+                    directors, writers, mainCast, rating);
+        }
+
+        private String getStringOrDefault(JsonObject json, String key, String defaultValue) {
+            return json.has(key) && !json.get(key).isJsonNull() ? json.get(key).getAsString() : defaultValue;
+        }
+
+        private int getIntOrDefault(JsonObject json, String key, int defaultValue) {
+            return json.has(key) && !json.get(key).isJsonNull() ? json.get(key).getAsInt() : defaultValue;
+        }
+
+        private double getDoubleOrDefault(JsonObject json, String key, double defaultValue) {
+            return json.has(key) && !json.get(key).isJsonNull() ? json.get(key).getAsDouble() : defaultValue;
+        }
+
+        private List<String> getStringListOrDefault(JsonObject json, String key) {
+            List<String> result = new ArrayList<>();
+            if (json.has(key) && !json.get(key).isJsonNull() && json.get(key).isJsonArray()) {
+                json.get(key).getAsJsonArray().forEach(element -> {
+                    if (!element.isJsonNull()) {
+                        result.add(element.getAsString());
+                    }
+                });
+            }
+            return result;
+        }
+    }
 
     public List<Movie> getAllMovies(){
         return getMovies(null, null, null, null);
@@ -25,43 +95,46 @@ public class MovieAPI {
 
         Request request = new Request.Builder()
                 .url(requestURL)
-                .removeHeader("User-Agent")
                 .addHeader("User-Agent", "http.agent")
                 .build();
 
-        // Try-Catch needed for handling execute() IO Exception
         try (Response response = client.newCall(request).execute()) {
-            Gson gson = new Gson();
-            Movie[] movies = gson.fromJson(response.body().string(), Movie[].class);
-            System.out.println(Arrays.asList(movies));
+            if (!response.isSuccessful()) {
+                return new ArrayList<>();
+            }
+
+            String responseBody = response.body().string();
+
+            Movie[] movies = gson.fromJson(responseBody, Movie[].class);
             return Arrays.asList(movies);
         } catch (Exception e) {
-            System.err.println("[ERROR] Request Execution failed: " + e.getMessage());
+            return new ArrayList<>();
         }
-
-        return new ArrayList<>();
     }
 
     private String buildRequestURL(String query, Genre genre, Object releaseYear, Object ratingFrom) {
-        String requestURL = URL;
+        StringBuilder urlBuilder = new StringBuilder(URL);
+        boolean hasParam = false;
 
-        // If parameter for specific request given -> build specific request URL, otherwise: all movies
-        if (query != null || genre != null || releaseYear != null || ratingFrom != null) {
-            requestURL += "?"; // create specific request
-            if (query != null) {
-                requestURL += "query="+query+DELIM;
-            }
-            if (genre != null) {
-                requestURL += "genre="+genre+DELIM;
-            }
-            if (releaseYear != null) {
-                requestURL += "releaseYear="+releaseYear+DELIM;
-            }
-            if (ratingFrom != null) {
-                requestURL += "ratingFrom="+ratingFrom+DELIM;
-            }
+        if (query != null) {
+            urlBuilder.append(hasParam ? "&" : "?").append("query=").append(query);
+            hasParam = true;
         }
 
-        return requestURL;
+        if (genre != null) {
+            urlBuilder.append(hasParam ? "&" : "?").append("genre=").append(genre);
+            hasParam = true;
+        }
+
+        if (releaseYear != null) {
+            urlBuilder.append(hasParam ? "&" : "?").append("releaseYear=").append(releaseYear);
+            hasParam = true;
+        }
+
+        if (ratingFrom != null) {
+            urlBuilder.append(hasParam ? "&" : "?").append("ratingFrom=").append(ratingFrom);
+        }
+
+        return urlBuilder.toString();
     }
 }
