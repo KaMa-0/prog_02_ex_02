@@ -408,7 +408,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void countMoviesFrom_returns_correct_count() { // zählt korrekt wieviele filme von einem bestimmten regisseur sind
+    void countMoviesFrom_returns_correct_count() {
         // when
         long result = homeController.countMoviesFrom("Dir. Shared");
 

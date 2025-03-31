@@ -173,6 +173,7 @@ public class HomeController implements Initializable {
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
     }
+
     public long countMoviesFrom(String director) {
         return allMovies.stream()
                 .filter(movie -> movie.getDirectors().contains(director))
@@ -237,9 +238,11 @@ public class HomeController implements Initializable {
     }
 
     public int getLongestMovieTitle() {
-        if (observableMovies == null || observableMovies.isEmpty()) return 0;
+        if (allMovies == null || allMovies.isEmpty()) {
+            return 0;
+        }
 
-        return observableMovies.stream()
+        return allMovies.stream()
                 .mapToInt(movie -> movie.getTitle().length())
                 .max()
                 .orElse(0);
