@@ -7,6 +7,7 @@ import at.ac.fhcampuswien.fhmdb.models.SortedState;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -21,6 +22,10 @@ class HomeControllerTest {
     static void init() {
         homeController = new HomeController();
         homeController.initializeState();
+    }
+
+    @BeforeEach
+    void prepareDummyList() {
         List<Movie> dummyMovies = Arrays.asList(
                 new Movie("5",  // "Comedy Chaos" (alphabetically first)
                         "Comedy Chaos",
