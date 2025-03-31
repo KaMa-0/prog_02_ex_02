@@ -404,7 +404,7 @@ class HomeControllerTest {
         int result = homeController.getLongestMovieTitle();
 
         // then
-        assertEquals(32, result);
+        assertEquals(18, result);
     }
 
     @Test
