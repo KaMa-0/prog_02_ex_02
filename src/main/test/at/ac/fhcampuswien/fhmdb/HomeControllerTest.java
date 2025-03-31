@@ -402,6 +402,26 @@ class HomeControllerTest {
         // then
         assertNull(result);
     }
+    //new-----
+    @Test
+    void getMostPopularActor_handles_tie_correctly() {
+        // given
+        List<Movie> tieMovies = Arrays.asList(
+                new Movie("1", "Movie 1", "", Arrays.asList(Genre.ACTION), 2020, 90,
+                        Arrays.asList("Dir A"), Arrays.asList(), Arrays.asList("Actor X", "Actor Y"), 5.0),
+                new Movie("2", "Movie 2", "", Arrays.asList(Genre.ACTION), 2020, 90,
+                        Arrays.asList("Dir B"), Arrays.asList(), Arrays.asList("Actor X", "Actor Z"), 5.0),
+                new Movie("3", "Movie 3", "", Arrays.asList(Genre.ACTION), 2020, 90,
+                        Arrays.asList("Dir C"), Arrays.asList(), Arrays.asList("Actor Y", "Actor Z"), 5.0)
+        );
+        homeController.setMovies(tieMovies);
+
+        // when
+        String result = homeController.getMostPopularActor();
+
+        // then
+        assertTrue(result.equals("Actor X") || result.equals("Actor Y") || result.equals("Actor Z"));
+    }
 
     @Test
     void getLongestMovieTitle_returns_correct_length() {
@@ -410,6 +430,24 @@ class HomeControllerTest {
 
         // then
         assertEquals(18, result);
+    }
+    //new-----
+    @Test
+    void getLongestMovieTitle_with_same_length_titles() {
+        // given
+        List<Movie> moviesWithSameLengthTitles = Arrays.asList(
+                new Movie("1", "12345678901234", "", Arrays.asList(Genre.ACTION), 2020, 90,
+                        Arrays.asList(), Arrays.asList(), Arrays.asList(), 5.0),
+                new Movie("2", "ABCDEFGHIJKLMN", "", Arrays.asList(Genre.ACTION), 2020, 90,
+                        Arrays.asList(), Arrays.asList(), Arrays.asList(), 5.0)
+        );
+        homeController.setMovies(moviesWithSameLengthTitles);
+
+        // when
+        int result = homeController.getLongestMovieTitle();
+
+        // then
+        assertEquals(14, result);
     }
 
     @Test
@@ -420,6 +458,23 @@ class HomeControllerTest {
         // then
         assertEquals(2, result);
     }
+    //new----
+    @Test
+    void countMoviesFrom_with_null_director_handled_properly() {
+        // when
+        long result = homeController.countMoviesFrom(null);
+        // then
+        assertEquals(0, result); // Or verify appropriate exception is thrown
+    }
+    //new-----
+    @Test
+    void countMoviesFrom_with_nonexistent_director_returns_zero() {
+        // when
+        long result = homeController.countMoviesFrom("Nonexistent Director");
+        // then
+        assertEquals(0, result);
+    }
+
 
     @Test
     void getMoviesBetweenYears_filters_movies_correctly() {
@@ -429,5 +484,22 @@ class HomeControllerTest {
         // then
         assertEquals(3, result.size());
         assertTrue(result.stream().allMatch(m -> m.getReleaseYear() >= 2000 && m.getReleaseYear() <= 2023));
+    }
+    //new-----
+    @Test
+    void getMoviesBetweenYears_with_exact_year_boundaries() {
+        // when
+        List<Movie> result = homeController.getMoviesBetweenYears(2022, 2022);
+        // then
+        assertEquals(1, result.size());
+        assertEquals("Galactic Odyssey", result.get(0).getTitle());
+    }
+    //new-----
+    @Test
+    void getMoviesBetweenYears_with_invalid_range_returns_empty_list() {
+        // when
+        List<Movie> result = homeController.getMoviesBetweenYears(2025, 2023);
+        // then
+        assertEquals(0, result.size());
     }
 }
