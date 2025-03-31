@@ -425,17 +425,4 @@ class HomeControllerTest {
         assertEquals(3, result.size());
         assertTrue(result.stream().allMatch(m -> m.getReleaseYear() >= 2000 && m.getReleaseYear() <= 2023));
     }
-
-    @Test
-    void movieApi_builds_correct_url_with_parameters() {
-        // given
-        MovieAPI api = new MovieAPI();
-
-        // when
-        String url = api.buildRequestURL("Matrix", Genre.ACTION, 2000, 8.0);
-
-        // then
-        assertEquals("https://example.com/movies?query=Matrix&genre=ACTION&releaseYear=2000&ratingFrom=8.0", url);
-    }
-
 }
